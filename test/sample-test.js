@@ -2,46 +2,44 @@
 describe("NFTMarket", function () {
   it("Should create and execute market sales", async function () {
     /* deploy the marketplace */
-    const Market = await ethers.getContractFactory("NFTMarket");
-    const market = await Market.deploy();
-    await market.deployed();
-    const marketAddress = market.address;
+    const NFTMarketplace = await ethers.getContractFactory("NFTMarketplace");
+    const nftMarketplace = await NFTMarketplace.deploy();
+    await nftMarketplace.deployed();
 
-    /* deploy the NFT contract */
-    const NFT = await ethers.getContractFactory("NFT");
-    const nft = await NFT.deploy(marketAddress);
-    await nft.deployed();
-    const nftContractAddress = nft.address;
-
-    let listingPrice = await market.getListingPrice();
+    let listingPrice = await nftMarketplace.getListingPrice();
     listingPrice = listingPrice.toString();
 
     const auctionPrice = ethers.utils.parseUnits("1", "ether");
 
     /* create two tokens */
-    await nft.createToken("https://www.mytokenlocation.com");
-    await nft.createToken("https://www.mytokenlocation2.com");
-
-    /* put both tokens for sale */
-    await market.createMarketItem(nftContractAddress, 1, auctionPrice, {
-      value: listingPrice,
-    });
-    await market.createMarketItem(nftContractAddress, 2, auctionPrice, {
-      value: listingPrice,
-    });
+    await nftMarketplace.createToken(
+      "https://www.mytokenlocation.com",
+      auctionPrice,
+      { value: listingPrice }
+    );
+    await nftMarketplace.createToken(
+      "https://www.mytokenlocation2.com",
+      auctionPrice,
+      { value: listingPrice }
+    );
 
     const [_, buyerAddress] = await ethers.getSigners();
 
     /* execute sale of token to another user */
-    await market
+    await nftMarketplace
       .connect(buyerAddress)
-      .createMarketSale(nftContractAddress, 1, { value: auctionPrice });
+      .createMarketSale(1, { value: auctionPrice });
+
+    /* resell a token */
+    await nftMarketplace
+      .connect(buyerAddress)
+      .resellToken(1, auctionPrice, { value: listingPrice });
 
     /* query for and return the unsold items */
-    items = await market.fetchMarketItems();
+    items = await nftMarketplace.fetchMarketItems();
     items = await Promise.all(
       items.map(async (i) => {
-        const tokenUri = await nft.tokenURI(i.tokenId);
+        const tokenUri = await nftMarketplace.tokenURI(i.tokenId);
         let item = {
           price: i.price.toString(),
           tokenId: i.tokenId.toString(),
