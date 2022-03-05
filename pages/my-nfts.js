@@ -36,14 +36,20 @@ export default function MyAssets() {
     const items = await Promise.all(
       data.map(async (i) => {
         const tokenURI = await marketplaceContract.tokenURI(i.tokenId);
-        const meta = await axios.get(tokenURI);
+        // const meta = await axios.get(tokenURI);
+        const meta = {
+          name: "Cuty",
+          description: "Cartoon Image ",
+          image:
+            "https://ipfs.infura.io/ipfs/QmTgSoSQJ6C33zhxhP9yajWq1QKmx6pFg7HBaYftdmWPrQ",
+        };
         let price = ethers.utils.formatUnits(i.price.toString(), "ether");
         let item = {
           price,
           tokenId: i.tokenId.toNumber(),
           seller: i.seller,
           owner: i.owner,
-          image: meta.data.image,
+          image: meta.image,
           tokenURI,
         };
         return item;
@@ -63,7 +69,7 @@ export default function MyAssets() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
           {nfts.map((nft, i) => (
             <div key={i} className="border shadow rounded-xl overflow-hidden">
-              <Image src={nft.image} className="rounded" alt="NFT-Image" />
+              <Image src={nft.image} className="rounded" alt="NFT-Image" width="250" height="250" />
               <div className="p-4 bg-black">
                 <p className="text-2xl font-bold text-white">
                   Price - {nft.price} Eth

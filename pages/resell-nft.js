@@ -22,8 +22,14 @@ export default function ResellNFT() {
 
   async function fetchNFT() {
     if (!tokenURI) return;
-    const meta = await axios.get(tokenURI);
-    updateFormInput((state) => ({ ...state, image: meta.data.image }));
+    // const meta = await axios.get(tokenURI);
+    const meta = {
+      name: "Cuty",
+      description: "Cartoon Image ",
+      image:
+        "https://ipfs.infura.io/ipfs/QmTgSoSQJ6C33zhxhP9yajWq1QKmx6pFg7HBaYftdmWPrQ",
+    };
+    updateFormInput((state) => ({ ...state, image: meta.image }));
   }
 
   async function listNFTForSale() {

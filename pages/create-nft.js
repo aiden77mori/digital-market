@@ -44,7 +44,6 @@ export default function CreateItem() {
       description,
       image: fileUrl,
     });
-    console.log(data);
     try {
       const added = await client.add(data);
       const url = `https://ipfs.infura.io/ipfs/${added.path}`;
@@ -61,7 +60,6 @@ export default function CreateItem() {
     const connection = await web3Modal.connect();
     const provider = new ethers.providers.Web3Provider(connection);
     const signer = provider.getSigner();
-
     /** create the NFT */
     const price = ethers.utils.parseUnits(formInput.price, "ether");
     let contract = new ethers.Contract(
